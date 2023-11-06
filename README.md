@@ -18,7 +18,7 @@ a simple framework to apply evolutionary mechanisms to PyTorch networks
 
 ## Roadmap
 ### Concept
-- [ ] test basic ideas in small tests
+- [x] test basic ideas in small tests
 
 ### Core Functions
 -  Population Initialization
