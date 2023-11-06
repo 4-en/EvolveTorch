@@ -50,3 +50,6 @@ a simple framework to apply evolutionary mechanisms to PyTorch networks
 ### Logging and Visualization
 - [ ] Implement logging mechanisms to track the progress of the evolutionary process.
 - [ ] Explore visualization tools for population statistics, fitness values, and convergence analysis.
+
+### Performance Optimization
+- [ ] improve performance if possibly :)
