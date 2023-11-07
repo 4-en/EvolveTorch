@@ -10,9 +10,14 @@ class Pipe:
 
 
     def check_collision(self, bird):
-        if bird.y < self.gap or bird.y + 0.1 > self.gap + self.width:
-            if bird.x + 0.1 > self.x and bird.x < self.x + 0.1:
-                return True
+        if bird.score + bird.size < self.x:
+            return False
+        if bird.score > self.x + self.width:
+            return False
+        if bird.y < self.gap - bird.size/2:
+            return True
+        if bird.y > self.gap + bird.size/2:
+            return True
         return False
 
 class Bird:
@@ -22,6 +27,7 @@ class Bird:
         self.y_velocity = 0 # y velocity of the bird
         self.jump_cooldown = 0
         self.dead = False
+        self.size = 0.03
 
     def reset(self):
         self.score = 0
@@ -31,8 +37,9 @@ class Bird:
         self.dead = False
 
     def jump(self):
-        self.y_velocity = 0.1
-        self.jump_cooldown = 0.2
+        if self.jump_cooldown <= 0:
+            self.y_velocity = -0.5
+            self.jump_cooldown = 0.2
 
     def tick(self, dt):
         return
@@ -53,8 +60,8 @@ class Birdgame:
         self.score = 0 # equal to distance traveled, if only one bird, this is the bird's score
 
         self.reset()
-        self.speed = 1
-        self.gravity = 0.1
+        self.speed = 0.5
+        self.gravity = 0.6
         self.next_pipe = 0
 
     def reset(self):
@@ -71,9 +78,9 @@ class Birdgame:
         return True
     
     def spawn_pipe(self):
-        if self.score - 10 < self.next_pipe:
-            self.pipes.append(Pipe(self.score + 10, random.uniform(0.2, 0.8)))
-            self.next_pipe = self.score + 10 + random.uniform(1, 3)
+        if self.score+3 > self.next_pipe:
+            self.pipes.append(Pipe(self.score + 3, random.uniform(0.2, 0.8)))
+            self.next_pipe = self.score + 3 + random.uniform(1, 3)
 
     def clean_pipes(self):
         for pipe in self.pipes:
