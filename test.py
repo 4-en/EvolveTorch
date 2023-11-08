@@ -1,0 +1,1 @@
+from testing.XOR.XOR_test import XOR

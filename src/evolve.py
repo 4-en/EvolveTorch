@@ -59,7 +59,7 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.5, mutation_amount=10)->"Genome":
+    def mutate(self, mutation_rate=1, mutation_amount=4)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
         parents = [self.dna]
         dna = self.dna.mutate()
@@ -68,8 +68,8 @@ class Genome:
         for param_old, param_new in zip(self.model.parameters(), model.parameters()):
             chances = torch.rand(param_old.shape)
             mask = chances < mutation_rate
-            mutations = torch.randn(param_old.shape) * mask * mutation_amount
-            param_new = param_old + mutations
+            mutations = (torch.randn(param_old.shape)*2-1) * mask * mutation_amount
+            param_new = param_old * mutations
         return Genome(model, parents, dna, population=self.population)
     
     def crossover(self, other:"Genome")->"Genome":
@@ -124,10 +124,10 @@ class Population:
         self.genomes = []
         self.verbose = True # print progress
         self.weights = {
-            "mutation": 3,
-            "crossover": 3,
+            "mutation": 20,
+            "crossover": 0,
             "elitism": 1,
-            "random": 1
+            "random": 10
         }
         if weights is not None:
             self.weights.update(weights)
@@ -244,7 +244,10 @@ class Population:
         self.genomes.extend(new_genomes)
     
     def create_genome(self):
-        return Genome(self.factory(), population=self)
+        g = Genome(self.factory(), population=self)
+        g.model.requires_grad_(False)
+        return g
+            
     
     def _print(self, *args, **kwargs):
         if self.verbose:
@@ -281,6 +284,9 @@ class Population:
     def plot_fitness(self):
         plt.plot([g.fitness for g in self.genomes])
         plt.show()
+
+    def get_best_model(self):
+        return self.genomes[0].model
 
 
         
