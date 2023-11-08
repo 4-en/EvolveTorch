@@ -59,9 +59,10 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.3, mutation_amount=2)->"Genome":
+    def mutate(self, mutation_rate=0.20, mutation_amount=2)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
         # by default, the mutation should be between half and double the current value, or *-1 of it
+        # [-mutation_amount, -1/mutation_amount] U [1/mutation_amount, mutation_amount
         # currently it is between -mutation_amount and +mutation_amount
         # TODO: avoid multiplying by values too close to 0
         parents = [self.dna]
@@ -123,14 +124,14 @@ class Population:
         self.generation = 0
         self.keep_old_gen_n = 0 # number of old models to keep
         self.top_p = 0.2 # percentage of top genomes to use for the next generation
-        self.top_weighting = lambda idx: 1.0 # weighting of the top genomes
+        self.top_weighting = lambda idx: 1 / 1 + idx # weighting of the top genomes
         self.generations = [] # old generations, usually without the models
         self.genomes = []
         self.verbose = True # print progress
         self.weights = {
             "mutation": 20,
-            "crossover": 0,
-            "elitism": 1,
+            "crossover": 10,
+            "elitism": 5,
             "random": 10
         }
         if weights is not None:
