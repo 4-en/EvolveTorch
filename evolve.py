@@ -59,7 +59,7 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.01, mutation_amount=0.1)->"Genome":
+    def mutate(self, mutation_rate=0.5, mutation_amount=10)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
         parents = [self.dna]
         dna = self.dna.mutate()
@@ -124,10 +124,10 @@ class Population:
         self.genomes = []
         self.verbose = True # print progress
         self.weights = {
-            "mutation": 2,
-            "crossover": 2,
+            "mutation": 3,
+            "crossover": 3,
             "elitism": 1,
-            "random": 10
+            "random": 1
         }
         if weights is not None:
             self.weights.update(weights)
@@ -289,12 +289,15 @@ class TestModel(torch.nn.Module):
         super().__init__()
         self.linear = torch.nn.Linear(1, 32)
         self.ReLU = torch.nn.ReLU()
-        self.linear2 = torch.nn.Linear(32, 1)
+        #self.linear2 = torch.nn.Linear(32, 32)
+        self.linear3 = torch.nn.Linear(32, 1)
     
     def forward(self, x):
         x = self.linear(x)
         x = self.ReLU(x)
-        x = self.linear2(x)
+        #x = self.linear2(x)
+        #x = self.ReLU(x)
+        x = self.linear3(x)
         return x
 
 def fitness_func(genome: Genome):
