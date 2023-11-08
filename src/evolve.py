@@ -59,8 +59,11 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=1, mutation_amount=4)->"Genome":
+    def mutate(self, mutation_rate=0.3, mutation_amount=2)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
+        # by default, the mutation should be between half and double the current value, or *-1 of it
+        # currently it is between -mutation_amount and +mutation_amount
+        # TODO: avoid multiplying by values too close to 0
         parents = [self.dna]
         dna = self.dna.mutate()
         model = self.population.factory()
@@ -69,7 +72,7 @@ class Genome:
             chances = torch.rand(param_old.shape)
             mask = chances < mutation_rate
             mutations = (torch.randn(param_old.shape)*2-1) * mask * mutation_amount
-            param_new = param_old * mutations
+            param_new.data = param_old * mutations
         return Genome(model, parents, dna, population=self.population)
     
     def crossover(self, other:"Genome")->"Genome":
@@ -81,7 +84,7 @@ class Genome:
         for param_self, param_other, param_new in zip(self.model.parameters(), other.model.parameters(), model.parameters()):
             chances = torch.rand(param_self.shape)
             mask = chances < 0.5
-            param_new = param_self * mask + param_other * (~mask)
+            param_new.data = param_self * mask + param_other * (~mask)
         return Genome(model, parents, dna, population=self.population)
     
     
@@ -96,7 +99,7 @@ class Population:
     The genomes are then crossed over and mutated to create the next generation.
     """
 
-    def __init__(self, factory: callable, fitness_function: callable, inversed_fitness=False, size: int = 128, weights: dict = None):
+    def __init__(self, factory: callable, fitness_function: callable, inverse_fitness=False, size: int = 128, weights: dict = None):
         """
         Create a population of genomes
         
@@ -115,6 +118,7 @@ class Population:
         """
         self.factory = factory
         self.fitness_function = fitness_function
+        self.inverse_fitness = inverse_fitness
         self.size = size
         self.generation = 0
         self.keep_old_gen_n = 0 # number of old models to keep
@@ -186,7 +190,7 @@ class Population:
         self.genomes = []
 
         # sort the genomes by fitness
-        old_genomes.sort(key=lambda g: g.fitness, reverse=True)
+        #old_genomes.sort(key=lambda g: g.fitness, reverse=True)
 
         next_elitism = 0
 
@@ -254,8 +258,9 @@ class Population:
             print(*args, **kwargs)
 
     def eval_fitness(self):
-        for genome in self.genomes:
-            genome.fitness = self.fitness_function(genome)
+        with torch.no_grad():
+            for genome in self.genomes:
+                genome.fitness = self.fitness_function(genome)
     
     def evolve(self, generations=1):
 
@@ -265,7 +270,7 @@ class Population:
             for genome in tqdm.tqdm(self.genomes):
                 genome.fitness = self.fitness_function(genome)
 
-        for i in range(generations):
+        for _ in range(generations):
 
             self._print(f"Creating generation {self.generation+1}")
             # create the next generation
@@ -277,9 +282,9 @@ class Population:
                 genome.fitness = self.fitness_function(genome)
 
             # sort the genomes by fitness
-            self.genomes.sort(key=lambda g: g.fitness, reverse=True)
-            # print best fitness
-            self._print(f"Best fitness: {self.genomes[0].fitness}")
+            self.genomes.sort(key=lambda g: g.fitness, reverse=(not self.inverse_fitness))
+            # print best 5 fitness
+            self._print(f"Best fitness: {[g.fitness for g in self.genomes[:5]]}")
 
     def plot_fitness(self):
         plt.plot([g.fitness for g in self.genomes])

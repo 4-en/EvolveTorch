@@ -27,11 +27,12 @@ def fitness(genome):
     y_pred = genome.model(x)
     
     # calculate loss
-    l = loss2(y_pred, y)
+    l = loss(y_pred, y)
     return 1 / (l + 1e-6)
 
-pop = Population(lambda: XOR(), fitness, size=1000)
-pop.evolve(50)
+pop = Population(lambda: XOR(), fitness, size=128)
+pop.verbose = True
+pop.evolve(500)
 
 ev_model = pop.get_best_model()
 print(ev_model(x))
@@ -47,4 +48,9 @@ for _ in range(1000):
     optimizer.zero_grad()
 
 print(model(x))
+
+# print weights
+print(ev_model.fc1.weight)
+print(model.fc1.weight)
+
 
