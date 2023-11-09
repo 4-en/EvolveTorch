@@ -15,6 +15,7 @@ class XOR(nn.Module):
         x = self.sigmoid(self.fc1(x))
         x = self.fc2(x)
         return x
+x, y = None, None
 
 x = torch.tensor([[0, 0], [0, 1], [1, 0], [1, 1]], dtype=torch.float)
 y = torch.tensor([[0], [1], [1], [0]], dtype=torch.float)
@@ -30,27 +31,29 @@ def fitness(genome):
     l = loss(y_pred, y)
     return 1 / (l + 1e-6)
 
-pop = Population(lambda: XOR(), fitness, size=128)
-pop.verbose = True
-pop.evolve(500)
 
-ev_model = pop.get_best_model()
-print(ev_model(x))
+def testXOR():
+    pop = Population(lambda: XOR(), fitness, size=128)
+    pop.verbose = True
+    pop.evolve(100)
 
-# train with gradient descent
-model = XOR()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.03)
-for _ in range(1000):
-    y_pred = model(x)
-    l = loss(y_pred, y)
-    l.backward()
-    optimizer.step()
-    optimizer.zero_grad()
+    ev_model = pop.get_best_model()
+    print(ev_model(x))
 
-print(model(x))
+    # train with gradient descent
+    model = XOR()
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.03)
+    for _ in range(1000):
+        y_pred = model(x)
+        l = loss(y_pred, y)
+        l.backward()
+        optimizer.step()
+        optimizer.zero_grad()
 
-# print weights
-print(ev_model.fc1.weight)
-print(model.fc1.weight)
+    print(model(x))
+
+    # print weights
+    print(ev_model.fc1.weight)
+    print(model.fc1.weight)
 
 

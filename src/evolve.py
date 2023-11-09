@@ -8,6 +8,13 @@ import tqdm
 
 import matplotlib.pyplot as plt
 
+
+class NoWith:
+    def __enter__(self):
+        pass
+    def __exit__(self, *args):
+        pass
+
 class DNA:
     """
     Represents a genome as a sequence of bytes.
@@ -59,7 +66,7 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.20, mutation_amount=2)->"Genome":
+    def mutate(self, mutation_rate=0.20, mutation_amount=2, epsilon=0.1)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
         # by default, the mutation should be between half and double the current value, or *-1 of it
         # [-mutation_amount, -1/mutation_amount] U [1/mutation_amount, mutation_amount
@@ -72,8 +79,11 @@ class Genome:
         for param_old, param_new in zip(self.model.parameters(), model.parameters()):
             chances = torch.rand(param_old.shape)
             mask = chances < mutation_rate
-            mutations = (torch.randn(param_old.shape)*2-1) * mask * mutation_amount
-            param_new.data = param_old * mutations
+            mutations = (torch.randn(param_old.shape)*2-1) * mutation_amount
+
+            # add epsilon to avoid multiplying by 0 and getting stuck
+            new_data = param_old * mutations + mutations * epsilon
+            param_new.data = torch.where(mask, new_data, param_old)
         return Genome(model, parents, dna, population=self.population)
     
     def crossover(self, other:"Genome")->"Genome":
@@ -100,7 +110,7 @@ class Population:
     The genomes are then crossed over and mutated to create the next generation.
     """
 
-    def __init__(self, factory: callable, fitness_function: callable, inverse_fitness=False, size: int = 128, weights: dict = None):
+    def __init__(self, factory: callable, fitness_function: callable, inverse_fitness=False, size: int = 128, weights: dict = None, device=None):
         """
         Create a population of genomes
         
@@ -124,18 +134,21 @@ class Population:
         self.generation = 0
         self.keep_old_gen_n = 0 # number of old models to keep
         self.top_p = 0.2 # percentage of top genomes to use for the next generation
-        self.top_weighting = lambda idx: 1 / 1 + idx # weighting of the top genomes
+        #self.top_weighting = lambda idx: 1 / 1 + idx # weighting of the top genomes
+        self.top_weighting = lambda idx: 1
         self.generations = [] # old generations, usually without the models
         self.genomes = []
         self.verbose = True # print progress
         self.weights = {
             "mutation": 20,
-            "crossover": 10,
-            "elitism": 5,
+            "crossover": 0,
+            "elitism": 2,
             "random": 10
         }
         if weights is not None:
             self.weights.update(weights)
+
+        self.device = device
 
         self.fill_population()
 
@@ -240,13 +253,16 @@ class Population:
             #genome.model = None
             # maybe use del ?
 
-        self.generations.append(old_genomes)
+        #self.generations.append(old_genomes)
 
 
     def fill_population(self):
-        missing = self.size - len(self.genomes)
-        new_genomes = [self.create_genome() for _ in range(missing)]
-        self.genomes.extend(new_genomes)
+        """Fill the population with new genomes"""
+        with torch.device(self.device) if self.device is not None else NoWith():
+            with torch.no_grad():
+                missing = self.size - len(self.genomes)
+                new_genomes = [self.create_genome() for _ in range(missing)]
+                self.genomes.extend(new_genomes)
     
     def create_genome(self):
         g = Genome(self.factory(), population=self)
@@ -259,33 +275,41 @@ class Population:
             print(*args, **kwargs)
 
     def eval_fitness(self):
-        with torch.no_grad():
-            for genome in self.genomes:
-                genome.fitness = self.fitness_function(genome)
+        with torch.device(self.device) if self.device is not None else NoWith():
+            with torch.no_grad():
+                for genome in self.genomes:
+                    genome.fitness = self.fitness_function(genome)
     
     def evolve(self, generations=1):
 
-        if self.generation == 0:
-            self._print(f"Evaluating generation {self.generation}")
-            # evaluate the fitness of the genomes
-            for genome in tqdm.tqdm(self.genomes):
-                genome.fitness = self.fitness_function(genome)
+        with torch.device(self.device) if self.device is not None else NoWith():
+            with torch.no_grad():
+                if self.generation == 0:
+                    self._print(f"Evaluating generation {self.generation}")
+                    # evaluate the fitness of the genomes
+                    for genome in tqdm.tqdm(self.genomes):
+                        genome.fitness = self.fitness_function(genome)
 
-        for _ in range(generations):
+                best_fit = self.get_best_genome().fitness
+                bf_s = f", Top: {best_fit:.2f}"
 
-            self._print(f"Creating generation {self.generation+1}")
-            # create the next generation
-            self.next_generation()
+                for _ in range(generations):
+                    
+                    self._print(f"Creating generation {self.generation+1}")
+                    # create the next generation
+                    self.next_generation()
 
-            self._print(f"Evaluating generation {self.generation}")
-            # evaluate the fitness of the genomes
-            for genome in tqdm.tqdm(self.genomes):
-                genome.fitness = self.fitness_function(genome)
+                    #self._print(f"Evaluating generation {self.generation}")
+                    # evaluate the fitness of the genomes
+                    for genome in self.genomes:
+                        genome.fitness = self.fitness_function(genome)
 
-            # sort the genomes by fitness
-            self.genomes.sort(key=lambda g: g.fitness, reverse=(not self.inverse_fitness))
-            # print best 5 fitness
-            self._print(f"Best fitness: {[g.fitness for g in self.genomes[:5]]}")
+                    # sort the genomes by fitness
+                    self.genomes.sort(key=lambda g: g.fitness, reverse=(not self.inverse_fitness))
+                    # print best 5 fitness
+                    self._print(f"Best fitness: {[g.fitness for g in self.genomes[:5]]}")
+                    best_fit = self.get_best_genome().fitness
+                    bf_s = f", Top: {best_fit:.2f}"
 
     def plot_fitness(self):
         plt.plot([g.fitness for g in self.genomes])
@@ -293,6 +317,9 @@ class Population:
 
     def get_best_model(self):
         return self.genomes[0].model
+    
+    def get_best_genome(self):
+        return self.genomes[0]
 
 
         
