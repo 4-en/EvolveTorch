@@ -42,6 +42,12 @@ a simple framework to apply evolutionary mechanisms to PyTorch networks
 
 - Population Replacement
 -  - [x] Define how new networks will replace the old generation, considering elitism and diversity.
+ 
+- DNA mechanism
+-  - [x] implement a mechanism that represents DNA to avoid crossover between certain models
+-  - [ ] avoid crossover between too different models (-> prevent useless combinations since likelyhood would be very low if models are too different)
+-  - [ ] avoid crossover between too similar models (-> prevents creating models that are too similar, which would lead to less/no progress)
+-  - [ ] remove models with too similar dna from population to maximise new combinations
 
 - Evolution Optimization
 -  - [ ] Test different strategies and values
