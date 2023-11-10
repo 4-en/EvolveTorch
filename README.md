@@ -64,3 +64,6 @@ a simple framework to apply evolutionary mechanisms to PyTorch networks
 
 ### Performance Optimization
 - [ ] improve performance if possibly :)
+
+### Further applications and ideas
+- [ ] use evolution to improve trained model after local minimum has been reached
