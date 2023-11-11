@@ -22,4 +22,5 @@ class MutateModelFactory:
     
     def __call__(self):
         mutant = self.genome.mutate(self.mutation_rate, self.mutation_strength)
+        return mutant.model
     
