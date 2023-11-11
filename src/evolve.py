@@ -66,7 +66,7 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.20, mutation_amount=2, epsilon=0.1)->"Genome":
+    def mutate(self, mutation_rate=0.20, mutation_amount=2, epsilon=0.01)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
         # by default, the mutation should be between half and double the current value, or *-1 of it
         # [-mutation_amount, -1/mutation_amount] U [1/mutation_amount, mutation_amount
@@ -141,7 +141,7 @@ class Population:
         self.verbose = True # print progress
         self.weights = {
             "mutation": 20,
-            "crossover": 0,
+            "crossover": 10,
             "elitism": 2,
             "random": 10
         }

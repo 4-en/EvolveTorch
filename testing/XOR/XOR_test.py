@@ -35,7 +35,7 @@ def fitness(genome):
 def testXOR():
     pop = Population(lambda: XOR(), fitness, size=128)
     pop.verbose = True
-    pop.evolve(100)
+    pop.evolve(250)
 
     ev_model = pop.get_best_model()
     print(ev_model(x))
