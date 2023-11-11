@@ -51,7 +51,8 @@ class StochasticFitness:
         """
         returns a subset of the dataset
         """
-        if self.subset_size >= len(self.dataset):
+        if self.subset_size >= len(self.dataset) and False:
+            # TODO: this is not implemented correctly, pls fix
             return self.dataset
         return torch.utils.data.Subset(self.dataset, np.random.choice(len(self.dataset), self.subset_size))
     
