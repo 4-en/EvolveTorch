@@ -1,5 +1,6 @@
 # this files contains some useful optional functions and classes
-from evolve import Genome
+from src.evolve import Genome
+import copy
 
 class CloneModelFactory:
     """
@@ -9,7 +10,7 @@ class CloneModelFactory:
         self.model = model
     
     def __call__(self):
-        return self.model.clone()
+        return copy.deepcopy(self.model)
     
 class MutateModelFactory:
     """

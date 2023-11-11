@@ -5,6 +5,7 @@ import base64
 import random
 import torch
 import tqdm
+import copy
 
 import matplotlib.pyplot as plt
 
@@ -74,12 +75,18 @@ class Genome:
         # TODO: avoid multiplying by values too close to 0
         parents = [self.dna]
         dna = self.dna.mutate()
-        model = self.population.factory()
+        model = copy.deepcopy(self.model)
         # mutate the model
         for param_old, param_new in zip(self.model.parameters(), model.parameters()):
             chances = torch.rand(param_old.shape)
             mask = chances < mutation_rate
             mutations = (torch.randn(param_old.shape)*2-1) * mutation_amount
+
+
+            # TODO: there is a problem with the mutation mechanism, it shouldnt use random values from the factory model
+            # but rather multiply the current value by a random value between -mutation_amount and mutation_amount
+            # pls fix
+
 
             # add epsilon to avoid multiplying by 0 and getting stuck
             new_data = param_old * mutations + mutations * epsilon
