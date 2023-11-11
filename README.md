@@ -52,7 +52,7 @@ a simple framework to apply evolutionary mechanisms to PyTorch networks
 - Evolution Optimization
 -  - [ ] Test different strategies and values
 -  - [ ] Test performance in different scenarios
--  - [ ] Compare with other methods like sgd 
+-  - [ ] Compare with other methods like supervised learning and reinforcement learning
 
 ### Main Evolution Loop
 - [x] Create a loop that iteratively evolves the population over multiple generations.
@@ -64,3 +64,6 @@ a simple framework to apply evolutionary mechanisms to PyTorch networks
 
 ### Performance Optimization
 - [ ] improve performance if possibly :)
+
+### Further applications and ideas
+- [ ] use evolution to improve trained model after local minimum has been reached
