@@ -2,7 +2,7 @@
 a simple framework to apply evolutionary mechanisms to PyTorch networks
 
 ## Goals
-- provide different functions to train networks using different evolutionary techniques
+- provide different functions to train networks using genetic algorithm
 - simple and easy to use
 
 ## Workflow (wip)
