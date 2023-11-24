@@ -16,12 +16,12 @@ class Pipe:
         if bird.score > self.x + self.width:
             return False
         if bird.y < self.gap_y:
-            print("bird below gap")
-            print("bird.y", bird.y, "gap_y", self.gap_y)
+            #print("bird below gap")
+            #print("bird.y", bird.y, "gap_y", self.gap_y)
             return True
         if bird.y + bird.size > self.gap_y + self.gap_size:
-            print("bird above gap")
-            print("bird.y", bird.y, "gap_y", self.gap_y)
+            #print("bird above gap")
+            #print("bird.y", bird.y, "gap_y", self.gap_y)
             return True
         return False
 
@@ -109,7 +109,7 @@ class Birdgame:
             width = 0.2
             gap_y = random.uniform(0.2, 0.8-gap_size)
             self.pipes.append(Pipe(self.score + 2, gap_y, width, gap_size))
-            print("spawned pipe at", self.score + 2)
+            #print("spawned pipe at", self.score + 2)
             self.next_pipe = self.score + 2 + random.uniform(0.8-(0.4*difficulty), 2.5-1.5*difficulty)
 
     def clean_pipes(self):
@@ -152,4 +152,31 @@ class Birdgame:
 
             bird.score = self.score
 
+    def get_fitness(self, bird, runs=1, max_score=9999):
+        """
+        Runs the game for a bird and returns the fitness
+        Only works for AI controlled birds
+        """
+        bird.game = self
+        score = 0
+        for _ in range(runs):
+            self.reset()
+            bird.reset()
+            self.birds = [bird]
+            while not self.game_over():
+                self.tick()
+                if self.score > max_score:
+                    break
+
+            score += self.score
+                
         
+        return score / runs
+    
+
+if __name__ == "__main__":
+    game = Birdgame()
+    bird = AIBird()
+
+    score = game.get_fitness(bird)
+    print("Fitness of AIBird: ", score)
