@@ -39,6 +39,10 @@ def main():
 
     bird_pos = SCREEN_WIDTH // 3
     wait_time = 1 / FPS
+
+    bird_colors = {
+        0: (0, 0, 0)
+    }
     
     # create font
     font = pygame.font.Font(None, 36)
@@ -56,26 +60,44 @@ def main():
                         jump = True
                     else:
                         game.reset()
+                if event.key == pygame.K_r:
+                    game.reset()
             
 
         if jump:
-            if len(game.birds) == 1 and not game.birds[0].dead:
+            if not game.birds[0].dead:
                 game.birds[0].jump()
         # Game logic
         game.tick(wait_time)
 
         score = int(game.score*10)
 
-        current_zero = bird_pos + game.score * SCREEN_HEIGHT
+        current_zero = game.score * SCREEN_HEIGHT - bird_pos
 
         # Draw
         screen.fill(SKY_BLUE)
         for pipe in game.pipes:
-            pygame.draw.rect(screen, GREEN, pygame.Rect(pipe.x * SCREEN_HEIGHT - current_zero, 0, 0.1 * SCREEN_HEIGHT, pipe.gap * SCREEN_HEIGHT))
-            pygame.draw.rect(screen, GREEN, pygame.Rect(pipe.x * SCREEN_HEIGHT - current_zero, pipe.gap * SCREEN_HEIGHT + 0.2 * SCREEN_HEIGHT, 0.1 * SCREEN_HEIGHT, SCREEN_HEIGHT))
-        for bird in game.birds:
-            pygame.draw.rect(screen, BLACK, pygame.Rect(bird_pos, bird.y * SCREEN_HEIGHT, bird.size * SCREEN_HEIGHT, bird.size * SCREEN_HEIGHT))
-        
+            pipe_x = pipe.x * SCREEN_HEIGHT - current_zero
+            if pipe_x > SCREEN_WIDTH or pipe_x + pipe.width * SCREEN_HEIGHT < 0:
+                # dont draw pipes that are off screen
+                continue
+            pipe_w = pipe.width * SCREEN_HEIGHT
+            gap_b = pipe.gap_y * SCREEN_HEIGHT
+            gap_t = SCREEN_HEIGHT - (pipe.gap_y + pipe.gap_size) * SCREEN_HEIGHT
+            pygame.draw.rect(screen, GREEN, pygame.Rect(pipe_x, 0, pipe_w, gap_t))
+            pygame.draw.rect(screen, GREEN, pygame.Rect(pipe_x, SCREEN_HEIGHT - gap_b, pipe_w, gap_b))
+        for i, bird in enumerate(game.birds):
+            bird_c = BLACK
+            if i not in bird_colors:
+                bird_colors[i] = generate_bird_color()
+            bird_c = bird_colors[i]
+
+            bpos = bird_pos
+            if bird.dead:
+                bpos = bird_pos - (game.score - bird.score) * SCREEN_HEIGHT
+            
+            pygame.draw.rect(screen, bird_c, pygame.Rect(bpos, (1 - bird.y-bird.size) * SCREEN_HEIGHT, bird.size * SCREEN_HEIGHT, bird.size * SCREEN_HEIGHT))
+
 
         # draw score on top right
 
