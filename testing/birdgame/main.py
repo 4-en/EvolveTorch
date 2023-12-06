@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 
-import birdgame
+import testing.birdgame.birdgame as birdgame
 
 
 
@@ -28,7 +28,7 @@ def generate_bird_color():
     return color
 
 
-def main():
+def main(birds=None):
     # Initialize pygame
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -36,6 +36,10 @@ def main():
 
     # Initialize game
     game = birdgame.Birdgame()
+    if birds is not None:
+        game.birds = birds
+        for bird in game.birds:
+            bird.game = game
 
     bird_pos = SCREEN_WIDTH // 3
     wait_time = 1 / FPS
@@ -112,6 +116,8 @@ def main():
 
         # Wait
         pygame.time.wait(int(wait_time * 1000))
+
+    print("Closing game")
 
 if __name__ == "__main__":
     main()

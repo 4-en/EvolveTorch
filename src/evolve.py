@@ -50,6 +50,25 @@ class DNA:
         new_dna[index//8] ^= 1 << (index%8)
         # return a new DNA
         return DNA(new_dna)
+    
+    def crossover(self, other:"DNA")->"DNA":
+        "return a crossover of this DNA and another DNA"
+        # copy the dna
+        new_dna = bytearray(self.dna)
+        # crossover the dna by choosing randomly from each dna
+        for i in range(len(self.dna)):
+            new_dna[i] = random.choice([self.dna[i], other.dna[i]])
+
+        # return a new DNA
+        return DNA(new_dna)
+    
+    def similarity(self, other:"DNA")->float:
+        "return the similarity between this DNA and another DNA"
+        # count the number of bits that are the same
+        count = 0
+        for b1, b2 in zip(self.dna, other.dna):
+            count += bin(b1 ^ b2).count("0")
+        return count / (len(self.dna)*8)
 
         
 
@@ -63,32 +82,37 @@ class Genome:
             self.dna = DNA()
         self.parents = parents
         self.population = population
+
+    def get_model(self):
+        return self.model
     
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.20, mutation_amount=2, epsilon=0.01)->"Genome":
+    def mutate(self, mutation_rate=0.002, mutation_amount=2, epsilon=0.01, weight_decay=False)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
-        # by default, the mutation should be between half and double the current value, or *-1 of it
-        # [-mutation_amount, -1/mutation_amount] U [1/mutation_amount, mutation_amount
-        # currently it is between -mutation_amount and +mutation_amount
-        # TODO: avoid multiplying by values too close to 0
+
         parents = [self.dna]
         dna = self.dna.mutate()
         model = copy.deepcopy(self.model)
+        mutation_min = 1/mutation_amount + epsilon # add epsilon to avoid weight decay to always push the weights to 0, only should happen for higher values
+        mutation_multiplier = mutation_amount - mutation_min
         # mutate the model
         for param_old, param_new in zip(self.model.parameters(), model.parameters()):
             chances = torch.rand(param_old.shape)
             mask = chances < mutation_rate
             mutations = (torch.randn(param_old.shape)*2-1) * mutation_amount
+            #my_rand = torch.rand(param_old.shape)
+            #mutations = (my_rand*mutation_multiplier+mutation_min)
 
-
-            # TODO: there is a problem with the mutation mechanism, it shouldnt use random values from the factory model
-            # but rather multiply the current value by a random value between -mutation_amount and mutation_amount
-            # pls fix
+            if weight_decay:
+                # center weights around 0
+                # this might not be the most efficient way to do this
+                mutations /= torch.exp(torch.pow(param_old/20, 2))
 
 
             # add epsilon to avoid multiplying by 0 and getting stuck
+            # also makes it possible to reverse sign of mutation
             new_data = param_old * mutations + mutations * epsilon
             param_new.data = torch.where(mask, new_data, param_old)
         return Genome(model, parents, dna, population=self.population)
@@ -144,11 +168,12 @@ class Population:
         #self.top_weighting = lambda idx: 1 / 1 + idx # weighting of the top genomes
         self.top_weighting = lambda idx: 1
         self.generations = [] # old generations, usually without the models
+        self.fitness_history = []
         self.genomes = []
         self.verbose = True # print progress
         self.weights = {
             "mutation": 20,
-            "crossover": 10,
+            "crossover": 0,
             "elitism": 2,
             "random": 10
         }
@@ -209,9 +234,6 @@ class Population:
         self.generation += 1
         old_genomes = self.genomes
         self.genomes = []
-
-        # sort the genomes by fitness
-        #old_genomes.sort(key=lambda g: g.fitness, reverse=True)
 
         next_elitism = 0
 
@@ -292,10 +314,14 @@ class Population:
         with torch.device(self.device) if self.device is not None else NoWith():
             with torch.no_grad():
                 if self.generation == 0:
-                    self._print(f"Evaluating generation {self.generation}")
+                    #self._print(f"Evaluating generation {self.generation}")
                     # evaluate the fitness of the genomes
+                    all_fitness = []
                     for genome in tqdm.tqdm(self.genomes):
-                        genome.fitness = self.fitness_function(genome)
+                        fitness = self.fitness_function(genome)
+                        genome.fitness = fitness
+                        all_fitness.append(fitness)
+                    self.fitness_history.append(all_fitness)
 
                 best_fit = self.get_best_genome().fitness
                 bf_s = f", Top: {best_fit:.2f}"
@@ -308,8 +334,12 @@ class Population:
 
                     #self._print(f"Evaluating generation {self.generation}")
                     # evaluate the fitness of the genomes
-                    for genome in self.genomes:
-                        genome.fitness = self.fitness_function(genome)
+                    all_fitness = []
+                    for genome in tqdm.tqdm(self.genomes):
+                        fitness = self.fitness_function(genome)
+                        genome.fitness = fitness
+                        all_fitness.append(fitness)
+                    self.fitness_history.append(all_fitness)
 
                     # sort the genomes by fitness
                     self.genomes.sort(key=lambda g: g.fitness, reverse=(not self.inverse_fitness))
@@ -321,6 +351,24 @@ class Population:
     def plot_fitness(self):
         plt.plot([g.fitness for g in self.genomes])
         plt.show()
+
+    def plot_fitness_history(self, save=False, name=None):
+        # plot best and avg fitness in each generation
+        if name is None:
+            name = "Fitness History"
+        best_fitness = [max(g) for g in self.fitness_history]
+        avg_fitness = [sum(g)/len(g) for g in self.fitness_history]
+        fig = plt.figure()
+        plt.plot(best_fitness, label="Best")
+        plt.plot(avg_fitness, label="Average")
+        plt.legend()
+        plt.title(name)
+        if save:
+            fig.savefig(name+".png")
+        else:
+
+            plt.show()
+        
 
     def get_best_model(self):
         return self.genomes[0].model

@@ -79,7 +79,7 @@ class AIBird(Bird):
 class Birdgame:
 
     def  __init__(self):
-        self.birds = [] 
+        self.birds = [Bird(self)] # future: multiple birds for genetic algorithm
         self.pipes = []
 
         self.score = 0 # equal to distance traveled, if only one bird, this is the bird's score
@@ -90,7 +90,9 @@ class Birdgame:
         self.next_pipe = 0
 
     def reset(self):
-        self.birds = [Bird(self), AIBird(self)] # future: multiple birds for genetic algorithm
+        #self.birds = [Bird(self), AIBird(self)] # future: multiple birds for genetic algorithm
+        for bird in self.birds:
+            bird.reset()
         self.pipes = []
         self.score = 0
         self.speed = 0.4
@@ -107,7 +109,7 @@ class Birdgame:
             difficulty = min(1, self.score/20)
             gap_size = 0.3 - 0.1*difficulty
             width = 0.2
-            gap_y = random.uniform(0.2, 0.8-gap_size)
+            gap_y = random.uniform(0.05, 0.95-gap_size)
             self.pipes.append(Pipe(self.score + 2, gap_y, width, gap_size))
             #print("spawned pipe at", self.score + 2)
             self.next_pipe = self.score + 2 + random.uniform(0.8-(0.4*difficulty), 2.5-1.5*difficulty)
@@ -178,5 +180,5 @@ if __name__ == "__main__":
     game = Birdgame()
     bird = AIBird()
 
-    score = game.get_fitness(bird)
+    score = game.get_fitness(bird, 10)
     print("Fitness of AIBird: ", score)
