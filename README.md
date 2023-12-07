@@ -35,7 +35,7 @@ Explore the "testing" directory for practical implementations of genetic algorit
 - train for n generations (or until some fitness goal is met)
 
 ### Example
-´´´python
+```python
 # define your model architecture
 class MyModel(nn.Module):
   ...
@@ -62,7 +62,7 @@ pop.evolve(n)
 best_model = pop.get_best_model()
 ...
 
-´´´
+```
 
 ## Roadmap
 ### Concept
