@@ -16,7 +16,7 @@ class MutateModelFactory:
     """
     mutates the model and returns it to fill the population
     """
-    def __init__(self, model, mutation_rate=0.01, mutation_strength=2):
+    def __init__(self, model, mutation_rate=0.1, mutation_strength=2):
         self.genome = Genome(model)
         self.mutation_rate = mutation_rate
         self.mutation_strength = mutation_strength

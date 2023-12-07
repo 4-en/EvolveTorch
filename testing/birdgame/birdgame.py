@@ -112,7 +112,7 @@ class Birdgame:
             gap_y = random.uniform(0.05, 0.95-gap_size)
             self.pipes.append(Pipe(self.score + 2, gap_y, width, gap_size))
             #print("spawned pipe at", self.score + 2)
-            self.next_pipe = self.score + 2 + random.uniform(0.8-(0.4*difficulty), 2.5-1.5*difficulty)
+            self.next_pipe = self.score + 2 + random.uniform(1.2-(0.4*difficulty), 2.5-1*difficulty)
 
     def clean_pipes(self):
         for pipe in self.pipes:
@@ -125,7 +125,7 @@ class Birdgame:
             return
         
 
-        movement = self.speed * dt * (1 + min(1.5, self.score/30))
+        movement = self.speed * dt #* (1 + min(1.5, self.score/30))
         self.score += movement
 
         self.spawn_pipe()

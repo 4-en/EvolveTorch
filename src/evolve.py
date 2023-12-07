@@ -1,7 +1,6 @@
 # main file
 
 import numpy as np
-import base64
 import random
 import torch
 import tqdm
@@ -21,54 +20,56 @@ class DNA:
     Represents a genome as a sequence of bytes.
     Can be mutated and crossed over.
     """
-    DNA_BYTES = 8
+    DNA_LENGHT = 32
+    DNA_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/="
     def __init__(self, data=None):
         if data is None:
             self.dna = self.create_dna()
         else:
             self.dna = data
     
-    def create_dna(self)->np.number:
-        # create random bytes
-        b = bytearray(random.getrandbits(8) for _ in range(self.DNA_BYTES))
-        return b
+    def create_dna(self)->str:
+        # create random string
+        dna = "".join(random.choices(self.DNA_CHARS, k=self.DNA_LENGHT))
+        return dna
+
     
     def __str__(self) -> str:
-        b64s = base64.b64encode(self.dna).decode('utf-8')
-        return b64s
+        return self.dna
     
     def __repr__(self) -> str:
         return f"DNA({self.dna})"
     
-    def mutate(self)->"DNA":
+    def mutate(self, mutations=1)->"DNA":
         "return a mutated copy of this DNA"
-        index = random.randint(0, len(self.dna)*8-1)
-        # copy the dna
-        new_dna = bytearray(self.dna)
-        # mutate the dna
-        # flip a random bit
-        new_dna[index//8] ^= 1 << (index%8)
-        # return a new DNA
-        return DNA(new_dna)
+        # replace a random character with a random character
+        dna = self.dna
+        for _ in range(mutations):
+            idx = random.randint(0, len(dna)-1)
+            dna = dna[:idx] + random.choice(self.DNA_CHARS) + dna[idx+1:]
+        return DNA(dna)
     
     def crossover(self, other:"DNA")->"DNA":
         "return a crossover of this DNA and another DNA"
         # copy the dna
-        new_dna = bytearray(self.dna)
+        new_dna = []
         # crossover the dna by choosing randomly from each dna
         for i in range(len(self.dna)):
-            new_dna[i] = random.choice([self.dna[i], other.dna[i]])
+            new_dna.append(random.choice([self.dna[i], other.dna[i]]))
+
+        new_dna = "".join(new_dna)
 
         # return a new DNA
         return DNA(new_dna)
     
     def similarity(self, other:"DNA")->float:
         "return the similarity between this DNA and another DNA"
-        # count the number of bits that are the same
+        # count the number of characters that are the same
         count = 0
         for b1, b2 in zip(self.dna, other.dna):
-            count += bin(b1 ^ b2).count("0")
-        return count / (len(self.dna)*8)
+            if b1 == b2:
+                count += 1
+        return count / len(self.dna)
 
         
 
@@ -89,7 +90,7 @@ class Genome:
     def __str__(self) -> str:
         return f"Genome of {self.model.__class__.__name__} with DNA {self.dna}"
     
-    def mutate(self, mutation_rate=0.002, mutation_amount=2, epsilon=0.01, weight_decay=False)->"Genome":
+    def mutate(self, mutation_rate=0.02, mutation_amount=2, epsilon=0.01, weight_decay=False)->"Genome":
         """Returns a new instance of this genome with a mutated DNA and model"""
 
         parents = [self.dna]
@@ -101,7 +102,7 @@ class Genome:
         for param_old, param_new in zip(self.model.parameters(), model.parameters()):
             chances = torch.rand(param_old.shape)
             mask = chances < mutation_rate
-            mutations = (torch.randn(param_old.shape)*2-1) * mutation_amount
+            mutations = (torch.randn(param_old.shape)) * mutation_amount
             #my_rand = torch.rand(param_old.shape)
             #mutations = (my_rand*mutation_multiplier+mutation_min)
 
@@ -120,7 +121,7 @@ class Genome:
     def crossover(self, other:"Genome")->"Genome":
         """Returns a new instance of this genome with a crossover of the DNA and model"""
         parents = [self.dna, other.dna]
-        dna = DNA()
+        dna = self.dna.crossover(other.dna)
         model = self.population.factory()
         # crossover the model
         for param_self, param_other, param_new in zip(self.model.parameters(), other.model.parameters(), model.parameters()):
@@ -344,7 +345,11 @@ class Population:
                     # sort the genomes by fitness
                     self.genomes.sort(key=lambda g: g.fitness, reverse=(not self.inverse_fitness))
                     # print best 5 fitness
-                    self._print(f"Best fitness: {[g.fitness for g in self.genomes[:5]]}")
+                    g1 = self.genomes[0]
+                    g2 = self.genomes[1]
+                    dna_similarity = g1.dna.similarity(g2.dna)
+                    print("Top similarity:", round(dna_similarity*100, 2))
+                    self._print(f"Best fitness: {[round(float(g.fitness), 3) for g in self.genomes[:5]]}")
                     best_fit = self.get_best_genome().fitness
                     bf_s = f", Top: {best_fit:.2f}"
 
