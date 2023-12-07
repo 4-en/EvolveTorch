@@ -1,9 +1,27 @@
 # EvolveTorch
-a simple framework to apply evolutionary mechanisms to PyTorch networks
+## Introduction
+This Python library is designed to implement and experiment with genetic algorithms and evolutionary algorithms using the PyTorch framework. Genetic algorithms draw inspiration from the process of natural selection to optimize solutions to complex problems.
 
-## Goals
-- provide different functions to train networks using genetic algorithm
-- simple and easy to use
+## What are Genetic Algorithms?
+Genetic algorithms are optimization algorithms inspired by the process of natural selection. They are used to find approximate solutions to optimization and search problems. In a genetic algorithm, a population of candidate solutions undergoes iterative generations of selection, crossover, and mutation to evolve towards optimal or near-optimal solutions.
+
+### Key Components of Genetic Algorithms
+- Population: A set of potential solutions to the optimization problem.
+- Fitness Function: A function that assigns a numerical score to each solution based on how well it satisfies the optimization criteria.
+- Selection: Individuals are chosen from the population based on their fitness scores to serve as parents for the next generation.
+- Crossover: Pairs of parents combine their genetic information to create offspring.
+- Mutation: Random changes are introduced to individual solutions to maintain diversity.
+- Termination Criteria: The algorithm stops when a specified condition is met (e.g., a maximum number of generations or satisfactory fitness level).
+
+## Goal of Genetic Algorithms:
+The primary goal of genetic algorithms is to efficiently explore a solution space and converge towards optimal or near-optimal solutions. By mimicking the principles of natural selection, genetic algorithms can be applied to a wide range of optimization problems, including parameter tuning in machine learning models, scheduling, and routing problems.
+
+## Getting Started
+Follow the examples and documentation provided in the library to apply genetic algorithms to your optimization problems. Experiment with different parameters, mutation strategies, and crossover methods to tailor the algorithm to your specific use case.
+Examples
+
+Explore the "testing" directory for practical implementations of genetic algorithms on various optimization problems.
+
 
 ## Workflow (wip)
 - create model to train with EvolveTorch
