@@ -19,13 +19,12 @@ The primary goal of genetic algorithms is to efficiently explore a solution spac
 
 ## Getting Started
 Follow the examples and documentation provided in the library to apply genetic algorithms to your optimization problems. Experiment with different parameters, mutation strategies, and crossover methods to tailor the algorithm to your specific use case.
-Examples
 
 Explore the "testing" directory for practical implementations of genetic algorithms on various optimization problems.
 
 
-## Workflow (wip)
-- create model to train with EvolveTorch
+### Workflow
+- create PyTorch model to train with EvolveTorch
 - create fitness function for the specific model
 - create EvolveTorch instance with model and fitness function
 - specify parameters (if using non default values)
@@ -33,7 +32,37 @@ Explore the "testing" directory for practical implementations of genetic algorit
   - elitism rate (% of top models to keep unchanged)
   - mutation properties
   - crossover properties
-- train for n generations (or until some goal is met)
+- train for n generations (or until some fitness goal is met)
+
+### Example
+´´´python
+# define your model architecture
+class MyModel(nn.Module):
+  ...
+
+# define a fitness function or use predefined from fitness.py
+def my_fitness(genome):
+  model = genome.get_model()
+  # x and y are input and output values from a dataset
+  y_pred = model(x)
+  # calculate loss
+  l = loss(y_pred, y)
+
+  # higher fitness -> better
+  return 1 / (l + 1e-6)
+
+# create Population
+pop = Population(lambda: MyModel(), my_fitness, size=128)
+
+# evolve for n generations
+n = 1000
+pop.evolve(n)
+
+# get best model and use it / save weights
+best_model = pop.get_best_model()
+...
+
+´´´
 
 ## Roadmap
 ### Concept
