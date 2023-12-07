@@ -1,4 +1,5 @@
 # EvolveTorch
+A simple genetic algorithm library for PyTorch
 ## Introduction
 This Python library is designed to implement and experiment with genetic algorithms and evolutionary algorithms using the PyTorch framework. Genetic algorithms draw inspiration from the process of natural selection to optimize solutions to complex problems.
 
