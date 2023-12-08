@@ -18,11 +18,14 @@ Genetic algorithms are optimization algorithms inspired by the process of natura
 The primary goal of genetic algorithms is to efficiently explore a solution space and converge towards optimal or near-optimal solutions. By mimicking the principles of natural selection, genetic algorithms can be applied to a wide range of optimization problems, including parameter tuning in machine learning models, scheduling, and routing problems.
 
 ## Why Genetic Algorithms?
-Genetic Algorithms offer a unique approach to neural network training, presenting both advantages and disadvantages compared to traditional methods like gradient descent.
+Genetic Algorithms offer a unique approach to neural network training, presenting both advantages and disadvantages compared to traditional methods like gradient descent. They are not an all-around solution, but can be worth considering if you problem can take advantage of their benefits.
 
 ### Advantages
 #### Global Search
 GAs are effective for exploring a broad solution space, making them well-suited for complex optimization problems where the optimal solution is not easily determined.
+
+#### Data-Efficient Learning with Genetic Algorithms
+Genetic Algorithms (GAs) offer a distinct advantage in that they don't necessitate extensive labeled training data. Unlike conventional machine learning methods, GAs operate on an evolutionary paradigm, making them particularly suitable for scenarios where gathering large datasets is challenging or impractical.
 
 #### No Gradient Dependencies
 Unlike gradient-based methods, GAs do not rely on the availability of gradients, making them applicable to non-differentiable and discontinuous objective functions.
