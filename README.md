@@ -50,7 +50,7 @@ GAs provide a black-box optimization approach, making it challenging to gain ins
 ## Getting Started
 Follow the examples and documentation provided in the library to apply genetic algorithms to your optimization problems. Experiment with different parameters, mutation strategies, and crossover methods to tailor the algorithm to your specific use case.
 
-Explore the "testing" directory for practical implementations of genetic algorithms on various optimization problems.
+Explore the "testing" directory for practical implementations of genetic algorithms on some simple optimization problems.
 
 
 ### Workflow
@@ -93,6 +93,22 @@ best_model = pop.get_best_model()
 ...
 
 ```
+
+### Example Implementations
+There are a few implemented examples that show some of the features in the testing directory. You can look at them directly or try to run the test.py file to see how it works.
+
+#### XOR Test
+In this test we try to train a simple network to emulate an XOR Gate by receiving two inputs, 1 or 0, and turning them into a single output.
+
+To train the network, we create two tensors of all possible inputs and their correct outputs. To evaluate the fitness, we simply use a loss function to calculate the average loss for the samples and return the inverse, since we want a higher fitness value for better results.
+
+After 1000 generations, we select the best performing model and measure its performance.
+![XOR_test_1000g](https://github.com/4-en/EvolveTorch/assets/105049118/4451c2db-2375-4c47-9e2e-d73daa9c8cec)
+
+#### Cosine test
+In this test we train the network to output the cosine of its input. Like previously, we use some example inputs as well as their correct outputs and a loss function to calculate the fitness of each genome.
+
+#### Game AI test
 
 ## Roadmap
 ### Concept
