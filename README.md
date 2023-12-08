@@ -114,6 +114,7 @@ In this test we train the network to output the cosine of its input. Like previo
 #### Game AI test
 
 ## Roadmap
+This roadmap shows some of the planned or possible features. While there is always more that could be improved, it serves as a general outline for the project.
 ### Concept
 - [x] test basic ideas in small tests
 
@@ -147,17 +148,17 @@ In this test we train the network to output the cosine of its input. Like previo
 -  - [ ] remove models with too similar dna from population to maximise new combinations
 
 - Evolution Optimization
--  - [ ] Test different strategies and values
--  - [ ] Test performance in different scenarios
+-  - [x] Test different strategies and values
+-  - [x] Test performance in different scenarios
 -  - [ ] Compare with other methods like supervised learning and reinforcement learning
 
 ### Main Evolution Loop
 - [x] Create a loop that iteratively evolves the population over multiple generations.
-- [ ] Decide on a termination condition (e.g., maximum generations or fitness threshold).
+- [x] Decide on a termination condition (e.g., maximum generations or fitness threshold).
 
 ### Logging and Visualization
-- [ ] Implement logging mechanisms to track the progress of the evolutionary process.
-- [ ] Explore visualization tools for population statistics, fitness values, and convergence analysis.
+- [x] Implement logging mechanisms to track the progress of the evolutionary process.
+- [x] Explore visualization tools for population statistics, fitness values, and convergence analysis.
 
 ### Performance Optimization
 - [ ] improve performance if possibly :)
