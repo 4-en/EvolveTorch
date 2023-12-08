@@ -31,10 +31,36 @@ def fitness(genome):
     
     # calculate loss
     l = loss(y_pred, y)
-    return 1 / (l + 1e-6)
+    return 1 / (l + 1e-3)
 
 
-def testXOR():
+def testXOR(model=None):
+    if model==None:
+        model = XOR()
+
+    print("XOR Gate test. Enter two values [0/1] to test model. X to exit.")
+
+    while True:
+        x = [0,0]
+        for i in range(2):
+            inp = input(f"Enter value {i}: ")
+            if inp == "x" or inp == "X":
+                return
+            v = 1
+            if inp == "0":
+                v = 0
+            x[i] = v
+
+        x = torch.tensor(x, dtype=torch.float)
+        y = model(x)
+        print(f"{x[0]} xor {x[1]} -> ", y)
+        print()
+
+        
+
+
+
+def trainXOR() -> XOR:
     pop = Population(lambda: XOR(), fitness, size=128)
     pop.verbose = True
     pop.evolve(1000)
@@ -82,6 +108,8 @@ def testXOR():
     print("EV")
     print("Pred", y_ev)
     print("Loss", loss_ev)
+
+    return ev_model
 
 
 
