@@ -106,12 +106,25 @@ In this test we try to train a simple network to emulate an XOR Gate by receivin
 To train the network, we create two tensors of all possible inputs and their correct outputs. To evaluate the fitness, we simply use a loss function to calculate the average loss for the samples and return the inverse, since we want a higher fitness value for better results.
 
 After 1000 generations, we select the best performing model and measure its performance.
-![XOR_test_1000g](https://github.com/4-en/EvolveTorch/assets/105049118/4451c2db-2375-4c47-9e2e-d73daa9c8cec)
+
+![XOR_test_1000gen](https://github.com/4-en/EvolveTorch/assets/105049118/4451c2db-2375-4c47-9e2e-d73daa9c8cec)
 
 #### Cosine test
 In this test we train the network to output the cosine of its input. Like previously, we use some example inputs as well as their correct outputs and a loss function to calculate the fitness of each genome.
+Since this model is a lot bigger than the previous one, it takes longer to train. Still, we can see some results after 50 generations, although training for longer would improve it further.
+
+![cosine_test_50gen](https://github.com/4-en/EvolveTorch/assets/105049118/441406b7-0c62-4385-a88a-c9aae46d2c80)
 
 #### Game AI test
+In this test, we try to train an AI that plays a simple game. In the game, the player has to navigate his character between obstacles in a endless level that is randomly generated. The longer the player survives without crashing, the higher his score gets.
+
+There is only one input, space, which makes the player jump until gravity catches up and he has to jump again. We will train a model that takes multiple inputs like score, position, velocity and position of the next obstacle to output a single value. If that value is above 0.5, the jump key is pressed.
+
+The interesting part in this example is, that we don't know what the optimal solution is. We don't know when the player should press space for every input and therefore we don't have a dataset we could just use to train with gradient descent like in the previous examples. Instead, to determine the fitness, we will just run the game with every model until the player crashes. The score will be equal to the fitness, which means that models that reach a higher score will be used to create the next generation and improve the performance further.
+
+![Birdgame 100pop 500gen](https://github.com/4-en/EvolveTorch/assets/105049118/9ee9b000-a8ba-491d-9739-0fd534c88e78)
+
+The graph shows that the algorithm keeps improving the models over time, even if it takes relatively long. After 500 generations, the model can consistently reach high scores.
 
 ## Roadmap
 This roadmap shows some of the planned or possible features. While there is always more that could be improved, it serves as a general outline for the project.
