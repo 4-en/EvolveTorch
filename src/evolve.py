@@ -310,7 +310,7 @@ class Population:
                 for genome in self.genomes:
                     genome.fitness = self.fitness_function(genome)
     
-    def evolve(self, generations=1):
+    def evolve(self, generations=1, target_fitness=None):
 
         with torch.device(self.device) if self.device is not None else NoWith():
             with torch.no_grad():
@@ -327,7 +327,7 @@ class Population:
                 best_fit = self.get_best_genome().fitness
                 bf_s = f", Top: {best_fit:.2f}"
 
-                for _ in range(generations):
+                for i in range(generations):
                     
                     self._print(f"Creating generation {self.generation+1}")
                     # create the next generation
@@ -348,9 +348,12 @@ class Population:
                     g1 = self.genomes[0]
                     g2 = self.genomes[1]
                     dna_similarity = g1.dna.similarity(g2.dna)
-                    print("Top similarity:", round(dna_similarity*100, 2))
+                    #print("Top similarity:", round(dna_similarity*100, 2))
                     self._print(f"Best fitness: {[round(float(g.fitness), 3) for g in self.genomes[:5]]}")
                     best_fit = self.get_best_genome().fitness
+                    if target_fitness != None and target_fitness < best_fit:
+                        self._print(f"Reached target fitness of {target_fitness} after {self.generation} generations.")
+                        return
                     bf_s = f", Top: {best_fit:.2f}"
 
     def plot_fitness(self):
