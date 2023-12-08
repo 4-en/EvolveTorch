@@ -55,6 +55,33 @@ Follow the examples and documentation provided in the library to apply genetic a
 
 Explore the "testing" directory for practical implementations of genetic algorithms on some simple optimization problems.
 
+### How to run
+#### Clone the repository
+```bash
+git clone https://github.com/your-username/your-repository.git
+cd your-repository
+```
+
+#### Create Conda Environment:
+Note:
+Make sure you have Conda installed. If not, you can download it from https://docs.conda.io/en/latest/miniconda.html.
+
+```bash
+conda env create -f environment.yml
+```
+
+#### Activate Conda Environment:
+
+```bash
+conda activate your-environment-name
+```
+
+#### Run with Python
+Either run test.py to see some examples or run your own code
+
+```bash
+python test.py
+```
 
 ### Workflow
 - create PyTorch model to train with EvolveTorch
