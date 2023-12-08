@@ -17,6 +17,33 @@ Genetic algorithms are optimization algorithms inspired by the process of natura
 ## Goal of Genetic Algorithms:
 The primary goal of genetic algorithms is to efficiently explore a solution space and converge towards optimal or near-optimal solutions. By mimicking the principles of natural selection, genetic algorithms can be applied to a wide range of optimization problems, including parameter tuning in machine learning models, scheduling, and routing problems.
 
+## Why Genetic Algorithms?
+Genetic Algorithms offer a unique approach to neural network training, presenting both advantages and disadvantages compared to traditional methods like gradient descent.
+
+### Advantages
+#### Global Search
+GAs are effective for exploring a broad solution space, making them well-suited for complex optimization problems where the optimal solution is not easily determined.
+
+#### No Gradient Dependencies
+Unlike gradient-based methods, GAs do not rely on the availability of gradients, making them applicable to non-differentiable and discontinuous objective functions.
+
+#### Parallel Exploration
+GAs can naturally explore multiple potential solutions in parallel through the population-based evolution process, potentially leading to faster convergence.
+
+### Disadvantages
+#### Computational Intensity
+Training neural networks using GAs can be computationally intensive, especially for large and complex networks, making them less efficient compared to gradient-based optimization methods.
+
+#### Search Space Explosion
+In highly complex optimization spaces, the number of possible solutions grows exponentially. GAs may struggle to efficiently explore and exploit this vast solution space, leading to suboptimal convergence.
+
+#### Risk of Premature Convergence
+GAs can be prone to premature convergence, where the population converges to a suboptimal solution before exploring the full solution space, particularly in complex optimization landscapes.
+
+#### Limited Understanding of Inner Workings
+GAs provide a black-box optimization approach, making it challenging to gain insights into the internal workings of the evolved neural networks.
+
+
 ## Getting Started
 Follow the examples and documentation provided in the library to apply genetic algorithms to your optimization problems. Experiment with different parameters, mutation strategies, and crossover methods to tailor the algorithm to your specific use case.
 
