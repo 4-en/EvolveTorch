@@ -33,6 +33,9 @@ Unlike gradient-based methods, GAs do not rely on the availability of gradients,
 #### Parallel Exploration
 GAs can naturally explore multiple potential solutions in parallel through the population-based evolution process, potentially leading to faster convergence.
 
+#### Combination with other methods
+Genetic Algorithms can be combined with other methods like gradient descent. They can be used to improve a pretrained model by using it as the initial population, potentially resulting in better performance and better generelization capabilities.
+
 ### Disadvantages
 #### Computational Intensity
 Training neural networks using GAs can be computationally intensive, especially for large and complex networks, making them less efficient compared to gradient-based optimization methods.
