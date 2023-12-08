@@ -22,7 +22,7 @@ def birdgame():
     # press space to fly
     # r to reset
     bg.run_game() # test with pretrained
-    model = bg.test_birdgame(50) # train for 50 gen
+    model = bg.test_birdgame(10) # train for 10 gen
     bg.run_game(model=model) # test with newly trained
 
 
