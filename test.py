@@ -1,5 +1,5 @@
 from testing.XOR import XOR_test as XOR
-from testing.cosine import cosine_test as cosine
+from testing.cosine import cosine_test
 from testing.birdgame import test_birdgame as bg
 
 def xor():
@@ -11,8 +11,24 @@ def xor():
 
     # test trained model
     XOR.testXOR(model)
-#cosine.cosine_test()
-#bg.test_birdgame(50, name="Bird test 100pop 50gen no_crossover 0.02_mutate 2_layers pretrained")
-#bg.run_game()
 
-xor()
+def cosine():
+    cosine_test.test_cosine()
+    model = cosine_test.train_cosine()
+    cosine_test.test_cosine(model=model)
+
+def birdgame():
+    # you play as player 1 and the ai as player 2
+    # press space to fly
+    # r to reset
+    bg.run_game() # test with pretrained
+    model = bg.test_birdgame(50) # train for 50 gen
+    bg.run_game(model=model) # test with newly trained
+
+
+
+if __name__ == "__main__":
+    # run all tests
+    #xor()
+    #cosine()
+    birdgame()

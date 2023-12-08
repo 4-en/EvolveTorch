@@ -25,9 +25,38 @@ class CosineModule(nn.Module):
         #x = self.sigmoid(x)
         return x
     
-    
+def test_cosine(model=None):
+    if model==None:
+        model = CosineModule()
 
-def cosine_test():
+    print("Cosine test. Enter a number to test model. X to exit.")
+
+    while True:
+        x = 0
+        inp = input(f"Enter value: ")
+        if inp == "x" or inp == "X":
+            return
+        try:
+            xs = inp.split("*")
+            xs = [ i.strip() for i in xs]
+            prod = 1.0
+            for i in xs:
+                if i.lower() == "pi":
+                    i = "3.142"
+                f = float(i)
+                prod*=f
+
+            x = prod
+        except:
+            x = 0.0
+                
+
+        x = torch.tensor([x], dtype=torch.float)
+        y = model(x)
+        print(f"cos({x}) =", y)
+        print()
+
+def train_cosine():
     x = torch.arange(0, 2*3.1415926, 0.01)
     x = x.unsqueeze(1)
     y = torch.cos(x)
@@ -49,7 +78,9 @@ def cosine_test():
 
     pop = Population(MutateModelFactory(model), StochasticFitness([(x,y)]), size=128)
     pop.verbose = True
-    pop.evolve(200)
+    pop.evolve(50)
+
+    pop.plot_fitness_history(save=True, name="plots/cosine_test_500g")
 
     ev_model = pop.get_best_model()
     test_values = torch.rand(1000) * 2 * PI
@@ -74,6 +105,8 @@ def cosine_test():
     print(torch.max(torch.abs(y_true - y_sl)))
     print("Evolved:")
     print(torch.max(torch.abs(y_true - y_ev)))
+
+    return ev_model
 
 
 

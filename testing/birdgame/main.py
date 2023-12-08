@@ -57,7 +57,8 @@ def main(birds=None):
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                pygame.quit()
+                return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if not game.game_over():
@@ -117,7 +118,6 @@ def main(birds=None):
         # Wait
         pygame.time.wait(int(wait_time * 1000))
 
-    print("Closing game")
 
 if __name__ == "__main__":
     main()

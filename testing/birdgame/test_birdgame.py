@@ -127,7 +127,7 @@ def test_birdgame(gen=200, name=None):
 
     best_model = pop.get_best_model()
     # save the best model
-    torch.save(best_model.state_dict(), "best_bird.pt")
+    #torch.save(best_model.state_dict(), "best_bird.pt")
 
     # plot hist
     if name is None:
@@ -135,9 +135,12 @@ def test_birdgame(gen=200, name=None):
     name = "plots/" + name
     pop.plot_fitness_history(name=name, save=True)
 
-def run_game():
-    model = BirdModel()
-    model.load_state_dict(torch.load("best_bird.pt"))
+    return best_model
+
+def run_game(model=None):
+    if model == None:
+        model = BirdModel()
+        model.load_state_dict(torch.load("best_bird.pt"))
     bird = Finch(model=model)
     #bird.print_debug = True	
 
