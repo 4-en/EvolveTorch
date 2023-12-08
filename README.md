@@ -106,11 +106,13 @@ In this test we try to train a simple network to emulate an XOR Gate by receivin
 To train the network, we create two tensors of all possible inputs and their correct outputs. To evaluate the fitness, we simply use a loss function to calculate the average loss for the samples and return the inverse, since we want a higher fitness value for better results.
 
 After 1000 generations, we select the best performing model and measure its performance.
+
 ![XOR_test_1000gen](https://github.com/4-en/EvolveTorch/assets/105049118/4451c2db-2375-4c47-9e2e-d73daa9c8cec)
 
 #### Cosine test
 In this test we train the network to output the cosine of its input. Like previously, we use some example inputs as well as their correct outputs and a loss function to calculate the fitness of each genome.
 Since this model is a lot bigger than the previous one, it takes longer to train. Still, we can see some results after 50 generations, although training for longer would improve it further.
+
 ![cosine_test_50gen](https://github.com/4-en/EvolveTorch/assets/105049118/441406b7-0c62-4385-a88a-c9aae46d2c80)
 
 #### Game AI test
