@@ -1,5 +1,5 @@
 # this files contains some useful optional functions and classes
-from src.evolve import Genome
+from .evolve import Genome
 import copy
 
 class CloneModelFactory:

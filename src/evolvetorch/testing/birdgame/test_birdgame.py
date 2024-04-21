@@ -1,14 +1,14 @@
 import torch
 from torch import nn
 
-from src.evolve import Population
-from src.fitness import StochasticFitness
-from src.util import MutateModelFactory
+from ...evolve import Population
+from ...fitness import StochasticFitness
+from ...util import MutateModelFactory
 
-import testing.birdgame.birdgame as birdgame
-import testing.birdgame.main as game_main
+from .birdgame import Birdgame, Bird
+from .main import main as game_main
 
-class Finch(birdgame.Bird):
+class Finch(Bird):
 
     def __init__(self, game=None, model=None):
         super().__init__(game)
@@ -100,7 +100,7 @@ class BirdModel(nn.Module):
         x = self.sigmoid(x)
         return x
     
-game = birdgame.Birdgame()
+game = Birdgame()
 game.verbose = False
     
 def test_fitness(genome):
@@ -118,7 +118,7 @@ def test_birdgame(gen=200, name=None):
     # load model
     model = BirdModel()
     model.load_state_dict(torch.load("best_bird.pt"))
-    from src.util import MutateModelFactory
+    from ...util import MutateModelFactory
     mmf = MutateModelFactory(model)
 
     pop = Population(mmf, test_fitness, size=100)
@@ -144,7 +144,7 @@ def run_game(model=None):
     bird = Finch(model=model)
     #bird.print_debug = True	
 
-    game_main.main([birdgame.Bird(), bird])
+    game_main.main([Bird(), bird])
 
     
 

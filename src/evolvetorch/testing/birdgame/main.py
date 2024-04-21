@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 
-import testing.birdgame.birdgame as birdgame
+from .birdgame import Birdgame
 
 
 
@@ -35,7 +35,7 @@ def main(birds=None):
     pygame.display.set_caption("Bird Game")
 
     # Initialize game
-    game = birdgame.Birdgame()
+    game = Birdgame()
     if birds is not None:
         game.birds = birds
         for bird in game.birds:

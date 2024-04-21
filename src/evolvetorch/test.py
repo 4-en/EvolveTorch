@@ -1,6 +1,6 @@
-from testing.XOR import XOR_test as XOR
-from testing.cosine import cosine_test
-from testing.birdgame import test_birdgame as bg
+from .testing.XOR import XOR_test as XOR
+from .testing.cosine import cosine_test
+from .testing.birdgame import test_birdgame as bg
 
 def xor():
     # test untrained model
@@ -25,10 +25,12 @@ def birdgame():
     model = bg.test_birdgame(10) # train for 10 gen
     bg.run_game(model=model) # test with newly trained
 
-
+def main():
+    # run all tests
+    xor()
+    cosine()
+    birdgame()
 
 if __name__ == "__main__":
     # run all tests
-    #xor()
-    #cosine()
-    birdgame()
+    main()

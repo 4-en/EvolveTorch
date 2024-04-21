@@ -1,9 +1,9 @@
 import torch
 from torch import nn
 
-from src.evolve import Population
-from src.fitness import StochasticFitness
-from src.util import MutateModelFactory
+from ...evolve import Population
+from ...fitness import StochasticFitness
+from ...util import MutateModelFactory
 from math import pi as PI
 
 

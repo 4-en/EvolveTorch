@@ -1,4 +1,4 @@
-from src.evolve import Population
+from ...evolve import Population
 
 import torch
 import torch.nn as nn
